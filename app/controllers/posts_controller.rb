@@ -18,7 +18,12 @@ class PostsController < ApplicationController
 
   def create
     @post = Post.new(content: params[:content], user_id: @current_user.id)
+    image = params[:image]
+    if image
+      @post.image_name = Time.now.to_s + ".jpg"
+    end
     if @post.save
+      image && File.binwrite("public/post_images/#{@post.image_name}", image.read)
       flash[:notice] = "投稿を作成しました"
       redirect_to("/posts/index")
     else
@@ -33,7 +38,12 @@ class PostsController < ApplicationController
   def update
     @post = Post.find_by(id: params[:id])
     @post.content = params[:content]
+    image = params[:image]
+    if image
+      @post.image_name = Time.now.to_s + ".jpg"
+    end
     if @post.save
+      image && File.binwrite("public/post_images/#{@post.image_name}", image.read)
       flash[:notice] = "投稿を編集しました"
       redirect_to("/posts/index")
     else
